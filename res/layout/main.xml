@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="vertical"
+              android:paddingLeft="24dp"
+              android:paddingTop="40dp"
+              android:paddingRight="24dp"
+              android:background="#F1F1F1">
+    <Button
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:background="@drawable/btn_red"
+            android:layout_marginTop="40dp"
+            android:onClick="onSettingsClicked"
+            android:text="打开辅助功能"
+            android:textSize="18sp"
+            android:textColor="@android:color/white"/>
+</LinearLayout>
+
