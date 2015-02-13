@@ -4,84 +4,76 @@
              android:layout_height="match_parent"
              android:background="#F1F1F1">
     <ScrollView
-            android:id="@+id/tips_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:scrollbars="none"
-            android:fadingEdge="none">
+            android:fadingEdge="none"
+            android:scrollbars="none">
         <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:paddingLeft="12dp"
-                android:paddingTop="16dp"
-                android:paddingRight="12dp"
-                android:paddingBottom="16dp">
-            <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="#333"
-                    android:textSize="16sp"
-                    android:text="@string/user_tips"/>
-            <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textSize="12sp"
-                    android:textColor="#999"
-                    android:text="@string/user_tips_details"/>
-            <TextView
-                    android:id="@+id/label_step1"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
-                    android:lineSpacingExtra="4dp"
-                    android:textSize="14sp"
-                    android:textColor="#333"/>
+                android:padding="12dp">
             <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/tip1"/>
-            <TextView
-                    android:id="@+id/label_step2"
+                    android:id="@+id/image_accessibility"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
-                    android:lineSpacingExtra="4dp"
-                    android:textSize="14sp"
-                    android:textColor="#333"/>
-            <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/tip2"/>
+                    android:src="@drawable/tips1"/>
             <Button
+                    android:id="@+id/button_accessibility"
                     android:layout_width="match_parent"
                     android:layout_height="40dp"
                     android:background="@drawable/btn_red"
-                    android:layout_marginTop="16dp"
+                    android:layout_marginTop="12dp"
+                    android:layout_marginLeft="40dp"
+                    android:layout_marginRight="40dp"
                     android:onClick="onSettingsClicked"
                     android:text="@string/enable_accessibility"
                     android:textSize="18sp"
                     android:textColor="@android:color/white"/>
+            <TextView
+                    android:id="@+id/label_accessible"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="4dp"
+                    android:textSize="14sp"/>
+            <View android:layout_width="match_parent" android:layout_height="40dp"/>
+            <ImageView
+                    android:id="@+id/image_notification"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone"
+                    android:src="@drawable/tips2"/>
+            <Button
+                    android:id="@+id/button_notification"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:background="@drawable/btn_red"
+                    android:layout_marginTop="12dp"
+                    android:layout_marginLeft="40dp"
+                    android:layout_marginRight="40dp"
+                    android:visibility="gone"
+                    android:onClick="onNotificationEnableButtonClicked"
+                    android:text="@string/enable_notification"
+                    android:textSize="18sp"
+                    android:textColor="@android:color/white"/>
+            <TextView
+                    android:id="@+id/label_notification"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="4dp"
+                    android:visibility="gone"
+                    android:textSize="14sp"/>
         </LinearLayout>
     </ScrollView>
-    <FrameLayout
-            android:id="@+id/normal_layout"
+    <TextView
+            android:id="@+id/label_text"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical"
-            android:visibility="gone"
-            android:paddingLeft="12dp"
-            android:paddingTop="16dp"
-            android:paddingRight="12dp"
-            android:paddingBottom="16dp">
-        <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="60dp"
-                android:textSize="16sp"
-                android:textColor="#333"
-                android:lineSpacingExtra="8dp"
-                android:text="@string/running_state"/>
-    </FrameLayout>
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:layout_margin="12dp"
+            android:textColor="#333"
+            android:textSize="18sp"/>
 </FrameLayout>
 

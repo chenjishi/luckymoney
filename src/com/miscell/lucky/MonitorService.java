@@ -3,10 +3,10 @@ package com.miscell.lucky;
 import android.accessibilityservice.AccessibilityService;
 import android.app.Notification;
 import android.app.PendingIntent;
+import android.os.Build;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
 import android.widget.RemoteViews;
@@ -30,23 +30,28 @@ public class MonitorService extends AccessibilityService {
         final int eventType = event.getEventType();
 
         if (eventType == AccessibilityEvent.TYPE_NOTIFICATION_STATE_CHANGED) {
-            Notification notification = (Notification) event.getParcelableData();
+            mLuckyClicked = false;
 
-            List<String> textList = getText(notification);
-            if (null != textList && textList.size() > 0) {
-                for (String text : textList) {
-                    if (!TextUtils.isEmpty(text) && text.contains("[微信红包]")) {
-                        mLuckyClicked = false;
-                        final PendingIntent pendingIntent = notification.contentIntent;
-                        try {
-                            pendingIntent.send();
-                        } catch (PendingIntent.CanceledException e) {
+            /**
+             * for API >= 18, we use NotificationListenerService to detect the notifications
+             * below API_18 we use AccessibilityService to detect
+             */
+
+            if (Build.VERSION.SDK_INT < 18) {
+                Notification notification = (Notification) event.getParcelableData();
+                List<String> textList = getText(notification);
+                if (null != textList && textList.size() > 0) {
+                    for (String text : textList) {
+                        if (!TextUtils.isEmpty(text) && text.contains("[微信红包]")) {
+                            final PendingIntent pendingIntent = notification.contentIntent;
+                            try {
+                                pendingIntent.send();
+                            } catch (PendingIntent.CanceledException e) {
+                            }
+                            break;
                         }
-                        break;
                     }
                 }
-            } else {
-                //TODO
             }
         }
 
@@ -59,6 +64,7 @@ public class MonitorService extends AccessibilityService {
                 if (mContainsLucky && !mLuckyClicked) {
                     int size = mNodeInfoList.size();
                     if (size > 0) {
+                        /** step1: get the last hongbao cell to fire click action */
                         AccessibilityNodeInfo cellNode = mNodeInfoList.get(size - 1);
                         cellNode.performAction(AccessibilityNodeInfo.ACTION_CLICK);
                         mContainsLucky = false;
@@ -68,6 +74,7 @@ public class MonitorService extends AccessibilityService {
                 if (mContainsOpenLucky) {
                     int size = mNodeInfoList.size();
                     if (size > 0) {
+                        /** step2: when hongbao clicked we need to open it, so fire click action */
                         AccessibilityNodeInfo cellNode = mNodeInfoList.get(size - 1);
                         cellNode.performAction(AccessibilityNodeInfo.ACTION_CLICK);
                         mContainsOpenLucky = false;
@@ -84,12 +91,9 @@ public class MonitorService extends AccessibilityService {
         if (count > 0) {
             for (int i = 0; i < count; i++) {
                 AccessibilityNodeInfo childNode = node.getChild(i);
-                Log.i("test", "## " + childNode.getClassName());
                 traverseNode(childNode);
             }
         } else {
-            Log.i("test", "## " + node.getClassName() + " " + node.getText());
-
             CharSequence text = node.getText();
             if (null != text && text.length() > 0) {
                 String str = text.toString();

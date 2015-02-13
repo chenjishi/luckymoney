@@ -2,57 +2,95 @@ package com.miscell.lucky;
 
 import android.accessibilityservice.AccessibilityServiceInfo;
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.app.Fragment;
+import android.content.ContentResolver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
-import android.text.Html;
+import android.text.TextUtils;
+import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.View;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityManager;
-import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ScrollView;
 import android.widget.TextView;
 
 import java.util.List;
 
 public class MainActivity extends Activity {
-    private static String STEP_1 = "1.请确认已<font color=\"#CC0000\">关闭</font>微信的<font color=\"#CC0000\">消息免打扰</font>功能，" +
-            "以确保能收到微信群发的所有信息。另外，请<font color=\"#CC0000\">更新微信至最新版";
-    private static String STEP_2 = "2.在\"<font color=\"#2F5676\">设置-辅助功能-服务</font>\"中点击“<font color=\"#CC0000\">有红包</font>”，并打开开关";
     private static final Intent sSettingsIntent =
             new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS);
 
-    private ScrollView mTipsLayout;
-    private FrameLayout mNormalLayout;
+    private TextView mAccessibleLabel;
+    private TextView mNotificationLabel;
+    private TextView mLabelText;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
 
-        mTipsLayout = (ScrollView) findViewById(R.id.tips_layout);
-        mNormalLayout = (FrameLayout) findViewById(R.id.normal_layout);
+        DisplayMetrics metrics = getResources().getDisplayMetrics();
+        final float density = metrics.density;
+        final int screenWidth = metrics.widthPixels;
 
-        ((TextView) findViewById(R.id.label_step1)).setText(Html.fromHtml(STEP_1));
-        ((TextView) findViewById(R.id.label_step2)).setText(Html.fromHtml(STEP_2));
+        int width = (int) (screenWidth - (density * 12 + .5f) * 2);
+        int height = (int) (366.f * width / 1080);
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(width, height);
+        ImageView imageView1 = (ImageView) findViewById(R.id.image_accessibility);
+        ImageView imageView2 = (ImageView) findViewById(R.id.image_notification);
+
+        mAccessibleLabel = (TextView) findViewById(R.id.label_accessible);
+        mNotificationLabel = (TextView) findViewById(R.id.label_notification);
+        mLabelText = (TextView) findViewById(R.id.label_text);
+
+        imageView1.setLayoutParams(lp);
+        imageView2.setLayoutParams(lp);
+
+        if (Build.VERSION.SDK_INT >= 18) {
+            imageView2.setVisibility(View.VISIBLE);
+            mNotificationLabel.setVisibility(View.VISIBLE);
+            findViewById(R.id.button_notification).setVisibility(View.VISIBLE);
+        } else {
+            imageView2.setVisibility(View.GONE);
+            mNotificationLabel.setVisibility(View.GONE);
+            findViewById(R.id.button_notification).setVisibility(View.GONE);
+        }
+
+        Log.i("test", "#SDK " + Build.VERSION.SDK_INT);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        if (!isAccessibleEnabled()) {
-            mNormalLayout.setVisibility(View.GONE);
-            mTipsLayout.setVisibility(View.VISIBLE);
-            showEnableAccessibilityDialog();
-        } else {
-            mTipsLayout.setVisibility(View.GONE);
-            mNormalLayout.setVisibility(View.VISIBLE);
+        changeLabelStatus();
+    }
+
+    private void changeLabelStatus() {
+        boolean isAccessibilityEnabled = isAccessibleEnabled();
+        mAccessibleLabel.setTextColor(isAccessibilityEnabled ? 0xFF009588 : Color.RED);
+        mAccessibleLabel.setText(isAccessibleEnabled() ? "辅助功能已打开" : "辅助功能未打开");
+        mLabelText.setText(isAccessibilityEnabled ? "好了~你可以去做其他事情了，我会自动给你抢红包的" : "请打开开关开始抢红包");
+
+        if (Build.VERSION.SDK_INT >= 18) {
+            boolean isNotificationEnabled = isNotificationEnabled();
+            mNotificationLabel.setTextColor(isNotificationEnabled ? 0xFF009588 : Color.RED);
+            mNotificationLabel.setText(isNotificationEnabled ? "接收通知已打开" : "接收通知未打开");
+
+            if (isAccessibilityEnabled && isNotificationEnabled) {
+                mLabelText.setText("好了~你可以去做其他事情了，我会自动给你抢红包的");
+            } else {
+                mLabelText.setText("请把两个开关都打开开始抢红包");
+            }
         }
+    }
+
+    public void onNotificationEnableButtonClicked(View view) {
+        startActivity(new Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS"));
     }
 
     public void onSettingsClicked(View view) {
@@ -69,6 +107,17 @@ public class MainActivity extends Activity {
             }
         }
         return false;
+    }
+
+    private boolean isNotificationEnabled() {
+        ContentResolver contentResolver = getContentResolver();
+        String enabledListeners = Settings.Secure.getString(contentResolver, "enabled_notification_listeners");
+
+        if (!TextUtils.isEmpty(enabledListeners)) {
+            return enabledListeners.contains("com.miscell.lucky/com.miscell.lucky.NotificationService");
+        } else {
+            return false;
+        }
     }
 
     private void showEnableAccessibilityDialog() {

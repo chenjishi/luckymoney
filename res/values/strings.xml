@@ -6,4 +6,5 @@
     <string name="enable_accessibility">启用辅助功能</string>
     <string name="disable_accessibility">关闭抢红包</string>
     <string name="running_state">抢红包功能已打开，你现在可以去做其他事情啦，我会给你自动抢的~</string>
+    <string name="enable_notification">启用通知开关</string>
 </resources>
