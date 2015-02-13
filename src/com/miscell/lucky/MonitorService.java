@@ -6,6 +6,7 @@ import android.app.PendingIntent;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
 import android.widget.RemoteViews;
@@ -83,9 +84,12 @@ public class MonitorService extends AccessibilityService {
         if (count > 0) {
             for (int i = 0; i < count; i++) {
                 AccessibilityNodeInfo childNode = node.getChild(i);
+                Log.i("test", "## " + childNode.getClassName());
                 traverseNode(childNode);
             }
         } else {
+            Log.i("test", "## " + node.getClassName() + " " + node.getText());
+
             CharSequence text = node.getText();
             if (null != text && text.length() > 0) {
                 String str = text.toString();

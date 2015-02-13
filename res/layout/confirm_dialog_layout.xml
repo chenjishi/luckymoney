@@ -13,7 +13,7 @@
             android:layout_marginTop="25dp"
             android:visibility="gone"
             android:textSize="18sp"
-            android:textColor="@color/main_text_color"/>
+            android:textColor="#333"/>
     <TextView
             android:id="@+id/dialog_message"
             android:layout_width="wrap_content"
