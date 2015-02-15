@@ -1,11 +1,14 @@
 package com.miscell.lucky;
 
 import android.accessibilityservice.AccessibilityService;
+import android.app.KeyguardManager;
 import android.app.Notification;
 import android.app.PendingIntent;
+import android.content.Context;
 import android.os.Build;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.os.PowerManager;
 import android.text.TextUtils;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
@@ -30,6 +33,7 @@ public class MonitorService extends AccessibilityService {
         final int eventType = event.getEventType();
 
         if (eventType == AccessibilityEvent.TYPE_NOTIFICATION_STATE_CHANGED) {
+            unlockScreen();
             mLuckyClicked = false;
 
             /**
@@ -82,6 +86,19 @@ public class MonitorService extends AccessibilityService {
                 }
             }
         }
+    }
+
+    private void unlockScreen() {
+        KeyguardManager keyguardManager = (KeyguardManager) getSystemService(Context.KEYGUARD_SERVICE);
+        final KeyguardManager.KeyguardLock keyguardLock = keyguardManager.newKeyguardLock("MyKeyguardLock");
+        keyguardLock.disableKeyguard();
+
+        PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
+        PowerManager.WakeLock wakeLock = pm.newWakeLock(PowerManager.FULL_WAKE_LOCK
+                | PowerManager.ACQUIRE_CAUSES_WAKEUP
+                | PowerManager.ON_AFTER_RELEASE, "MyWakeLock");
+
+        wakeLock.acquire();
     }
 
     private void traverseNode(AccessibilityNodeInfo node) {

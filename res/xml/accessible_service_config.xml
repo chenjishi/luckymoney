@@ -3,8 +3,8 @@
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:description="@string/app_name"
         android:accessibilityEventTypes="typeWindowStateChanged|typeNotificationStateChanged"
-        android:accessibilityFeedbackType="feedbackGeneric"
+        android:accessibilityFeedbackType="feedbackAllMask"
         android:packageNames="com.tencent.mm"
-        android:notificationTimeout="100"
+        android:notificationTimeout="60"
         android:accessibilityFlags="flagIncludeNotImportantViews"
         android:canRetrieveWindowContent="true"/>

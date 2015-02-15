@@ -2,16 +2,21 @@ package com.miscell.lucky;
 
 import android.accessibilityservice.AccessibilityServiceInfo;
 import android.app.Activity;
+import android.app.KeyguardManager;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.PowerManager;
 import android.provider.Settings;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityManager;
 import android.widget.ImageView;
@@ -59,7 +64,17 @@ public class MainActivity extends Activity {
             mNotificationLabel.setVisibility(View.GONE);
             findViewById(R.id.button_notification).setVisibility(View.GONE);
         }
+
+//        imageView1.postDelayed(new Runnable() {
+//            @Override
+//            public void run() {
+//                Log.i("test", "# fired");
+//                unlockScreen();
+//
+//            }
+//        }, 5000L);
     }
+
 
     @Override
     protected void onResume() {
