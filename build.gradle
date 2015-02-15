@@ -20,15 +20,6 @@ android {
           abortOnError false
       }
 
-    signingConfigs {  
-        myConfig{  
-            storeFile file("android.keystore")  
-            storePassword "111111"  
-            keyAlias "android.keystore"  
-            keyPassword "111111"  
-        }  
-    }  
-
     productFlavors {
 	dashi {
 			packageName='com.dashiweiwu.dashi'
