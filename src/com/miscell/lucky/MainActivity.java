@@ -11,7 +11,6 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.View;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityManager;
@@ -60,8 +59,6 @@ public class MainActivity extends Activity {
             mNotificationLabel.setVisibility(View.GONE);
             findViewById(R.id.button_notification).setVisibility(View.GONE);
         }
-
-        Log.i("test", "#SDK " + Build.VERSION.SDK_INT);
     }
 
     @Override
@@ -102,7 +99,7 @@ public class MainActivity extends Activity {
 
         List<AccessibilityServiceInfo> runningServices = manager.getEnabledAccessibilityServiceList(AccessibilityEvent.TYPES_ALL_MASK);
         for (AccessibilityServiceInfo info : runningServices) {
-            if (info.getId().equals("com.miscell.lucky/.MonitorService")) {
+            if (info.getId().equals(getPackageName() + "/.MonitorService")) {
                 return true;
             }
         }
@@ -114,7 +111,7 @@ public class MainActivity extends Activity {
         String enabledListeners = Settings.Secure.getString(contentResolver, "enabled_notification_listeners");
 
         if (!TextUtils.isEmpty(enabledListeners)) {
-            return enabledListeners.contains("com.miscell.lucky/com.miscell.lucky.NotificationService");
+            return enabledListeners.contains(getPackageName() + "/" + getPackageName() + ".NotificationService");
         } else {
             return false;
         }
