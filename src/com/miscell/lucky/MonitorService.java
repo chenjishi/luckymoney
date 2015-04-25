@@ -5,6 +5,7 @@ import android.app.KeyguardManager;
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Build;
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -82,6 +83,10 @@ public class MonitorService extends AccessibilityService {
                         AccessibilityNodeInfo cellNode = mNodeInfoList.get(size - 1);
                         cellNode.performAction(AccessibilityNodeInfo.ACTION_CLICK);
                         mContainsOpenLucky = false;
+                        Intent i = new Intent(Intent.ACTION_MAIN);
+                        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        i.addCategory(Intent.CATEGORY_HOME);
+                        startActivity(i);
                     }
                 }
             }
