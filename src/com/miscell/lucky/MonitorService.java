@@ -22,11 +22,7 @@ import java.util.List;
  * Created by chenjishi on 15/2/12.
  */
 public class MonitorService extends AccessibilityService {
-    private ArrayList<AccessibilityNodeInfo> mNodeInfoList = new ArrayList<AccessibilityNodeInfo>();
-
     private boolean mLuckyClicked;
-    private boolean mContainsLucky;
-    private boolean mContainsOpenLucky;
 
     @Override
     public void onAccessibilityEvent(AccessibilityEvent event) {
@@ -60,28 +56,38 @@ public class MonitorService extends AccessibilityService {
         }
 
         if (eventType == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) {
-            AccessibilityNodeInfo nodeInfo = event.getSource();
-
-            if (null != nodeInfo) {
-                mNodeInfoList.clear();
-                traverseNode(nodeInfo);
-                if (mContainsLucky && !mLuckyClicked) {
-                    int size = mNodeInfoList.size();
-                    if (size > 0) {
-                        /** step1: get the last hongbao cell to fire click action */
-                        AccessibilityNodeInfo cellNode = mNodeInfoList.get(size - 1);
-                        cellNode.performAction(AccessibilityNodeInfo.ACTION_CLICK);
-                        mContainsLucky = false;
-                        mLuckyClicked = true;
+            String clazzName = event.getClassName().toString();
+            if (clazzName.equals("com.tencent.mm.ui.LauncherUI")) {
+                AccessibilityNodeInfo nodeInfo = event.getSource();
+                if (null != nodeInfo) {
+                    List<AccessibilityNodeInfo> list = nodeInfo.findAccessibilityNodeInfosByText("领取红包");
+                    if (null != list && list.size() > 0) {
+                        AccessibilityNodeInfo node = list.get(list.size() - 1);
+                        if (node.isClickable()) {
+                            node.performAction(AccessibilityNodeInfo.ACTION_CLICK);
+                        } else {
+                            AccessibilityNodeInfo parentNode = node;
+                            for (int i = 0; i < 5; i++) {
+                                if (null != parentNode) {
+                                    parentNode = parentNode.getParent();
+                                    if (null != parentNode && parentNode.isClickable() && !mLuckyClicked) {
+                                        parentNode.performAction(AccessibilityNodeInfo.ACTION_CLICK);
+                                        mLuckyClicked = true;
+                                        break;
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
-                if (mContainsOpenLucky) {
-                    int size = mNodeInfoList.size();
-                    if (size > 0) {
-                        /** step2: when hongbao clicked we need to open it, so fire click action */
-                        AccessibilityNodeInfo cellNode = mNodeInfoList.get(size - 1);
-                        cellNode.performAction(AccessibilityNodeInfo.ACTION_CLICK);
-                        mContainsOpenLucky = false;
+            }
+
+            if (clazzName.equals("com.tencent.mm.plugin.luckymoney.ui.LuckyMoneyReceiveUI")) {
+                AccessibilityNodeInfo nodeInfo = event.getSource();
+                if (null != nodeInfo) {
+                    List<AccessibilityNodeInfo> list = nodeInfo.findAccessibilityNodeInfosByText("拆红包");
+                    for (AccessibilityNodeInfo node : list) {
+                        node.performAction(AccessibilityNodeInfo.ACTION_CLICK);
                     }
                 }
             }
@@ -99,33 +105,6 @@ public class MonitorService extends AccessibilityService {
                 | PowerManager.ON_AFTER_RELEASE, "MyWakeLock");
 
         wakeLock.acquire();
-    }
-
-    private void traverseNode(AccessibilityNodeInfo node) {
-        if (null == node) return;
-
-        final int count = node.getChildCount();
-        if (count > 0) {
-            for (int i = 0; i < count; i++) {
-                AccessibilityNodeInfo childNode = node.getChild(i);
-                traverseNode(childNode);
-            }
-        } else {
-            CharSequence text = node.getText();
-            if (null != text && text.length() > 0) {
-                String str = text.toString();
-                if (str.contains("领取红包")) {
-                    mContainsLucky = true;
-                    AccessibilityNodeInfo cellNode = node.getParent().getParent().getParent();
-                    if (null != cellNode) mNodeInfoList.add(cellNode);
-                }
-
-                if (str.contains("拆红包")) {
-                    mContainsOpenLucky = true;
-                    mNodeInfoList.add(node);
-                }
-            }
-        }
     }
 
     public List<String> getText(Notification notification) {

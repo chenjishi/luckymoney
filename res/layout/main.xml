@@ -65,6 +65,14 @@
                     android:layout_marginTop="4dp"
                     android:visibility="gone"
                     android:textSize="14sp"/>
+            <TextView
+                    android:id="@+id/version_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:layout_gravity="center_horizontal"
+                    android:textColor="#333"
+                    android:textSize="15sp"/>
         </LinearLayout>
     </ScrollView>
     <TextView

@@ -29,6 +29,7 @@ public class NotificationService extends NotificationListenerService {
                 String detailText = extras.getString("android.text");
                 if (!TextUtils.isEmpty(detailText)) textList.add(detailText);
 
+
                 if (textList.size() > 0) {
                     for (String text : textList) {
                         if (!TextUtils.isEmpty(text) && text.contains("[微信红包]")) {

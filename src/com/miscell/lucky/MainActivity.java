@@ -6,6 +6,8 @@ import android.app.KeyguardManager;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
@@ -65,6 +67,8 @@ public class MainActivity extends Activity {
             findViewById(R.id.button_notification).setVisibility(View.GONE);
         }
 
+        ((TextView) findViewById(R.id.version_text)).setText("版本:" + getVersionName());
+
 //        imageView1.postDelayed(new Runnable() {
 //            @Override
 //            public void run() {
@@ -73,6 +77,19 @@ public class MainActivity extends Activity {
 //
 //            }
 //        }, 5000L);
+    }
+
+    private String getVersionName() {
+        String versionName = "";
+
+        try {
+            PackageInfo pi = getPackageManager().getPackageInfo(getPackageName(), 0);
+            versionName = pi.versionName;
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        return versionName;
     }
 
 
