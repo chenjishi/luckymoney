@@ -84,12 +84,45 @@ public class MonitorService extends AccessibilityService {
 
             if (clazzName.equals("com.tencent.mm.plugin.luckymoney.ui.LuckyMoneyReceiveUI")) {
                 AccessibilityNodeInfo nodeInfo = event.getSource();
-                if (null != nodeInfo) {
-                    List<AccessibilityNodeInfo> list = nodeInfo.findAccessibilityNodeInfosByText("拆红包");
-                    for (AccessibilityNodeInfo node : list) {
-                        node.performAction(AccessibilityNodeInfo.ACTION_CLICK);
-                    }
+                if (null == nodeInfo) return;
+
+                traverseNode(nodeInfo);
+
+//                List<AccessibilityNodeInfo> list = nodeInfo.findAccessibilityNodeInfosByText("拆红包");
+//                for (AccessibilityNodeInfo node : list) {
+//                    node.performAction(AccessibilityNodeInfo.ACTION_CLICK);
+//                }
+            }
+        }
+    }
+
+    private void traverseNode(AccessibilityNodeInfo node) {
+        if (null == node) return;
+
+        final int count = node.getChildCount();
+        if (count > 0) {
+            for (int i = 0; i < count; i++) {
+                AccessibilityNodeInfo childNode = node.getChild(i);
+                if (childNode.getClassName().equals("android.widget.Button") && childNode.isClickable()) {
+                    childNode.performAction(AccessibilityNodeInfo.ACTION_CLICK);
                 }
+
+                traverseNode(childNode);
+            }
+        } else {
+            CharSequence text = node.getText();
+            if (null != text && text.length() > 0) {
+                String str = text.toString();
+//                if (str.contains("领取红包")) {
+//                    mContainsLucky = true;
+//                    AccessibilityNodeInfo cellNode = node.getParent().getParent().getParent();
+//                    if (null != cellNode) mNodeInfoList.add(cellNode);
+//                }
+//
+//                if (str.contains("拆红包")) {
+//                    mContainsOpenLucky = true;
+//                    mNodeInfoList.add(node);
+//                }
             }
         }
     }
