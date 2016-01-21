@@ -103,7 +103,7 @@ public class MonitorService extends AccessibilityService {
         if (count > 0) {
             for (int i = 0; i < count; i++) {
                 AccessibilityNodeInfo childNode = node.getChild(i);
-                if (childNode.getClassName().equals("android.widget.Button") && childNode.isClickable()) {
+                if (null != childNode && childNode.getClassName().equals("android.widget.Button") && childNode.isClickable()) {
                     childNode.performAction(AccessibilityNodeInfo.ACTION_CLICK);
                 }
 
