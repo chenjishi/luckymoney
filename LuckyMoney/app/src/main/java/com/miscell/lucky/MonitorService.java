@@ -9,9 +9,13 @@ import android.view.accessibility.AccessibilityNodeInfo;
 
 import java.util.List;
 
+import static android.view.accessibility.AccessibilityEvent.*;
+import static android.view.accessibility.AccessibilityNodeInfo.ACTION_CLICK;
+
 /**
  * Created by chenjishi on 15/2/12.
  */
+// TODO: 2017/1/24 remember add logic do not depend on notification notify to open lucky
 public class MonitorService extends AccessibilityService {
     private boolean mLuckyClicked;
 
@@ -19,43 +23,40 @@ public class MonitorService extends AccessibilityService {
     public void onAccessibilityEvent(AccessibilityEvent event) {
         final int eventType = event.getEventType();
 
-        if (eventType == AccessibilityEvent.TYPE_NOTIFICATION_STATE_CHANGED) {
-            unlockScreen();
+        if (eventType == TYPE_NOTIFICATION_STATE_CHANGED) {
             mLuckyClicked = false;
+            unlockScreen();
         }
 
-        if (eventType == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) {
-            String clazzName = event.getClassName().toString();
-            if (clazzName.equals("com.tencent.mm.ui.LauncherUI")) {
-                AccessibilityNodeInfo nodeInfo = event.getSource();
-                if (null != nodeInfo) {
-                    List<AccessibilityNodeInfo> list = nodeInfo.findAccessibilityNodeInfosByText("领取红包");
-                    if (null != list && list.size() > 0) {
-                        AccessibilityNodeInfo node = list.get(list.size() - 1);
+        if (eventType == TYPE_WINDOW_CONTENT_CHANGED) {
+            AccessibilityNodeInfo rootNode = getRootInActiveWindow();
+            if (null == rootNode) return;
 
-                        if (node.isClickable()) {
-                            node.performAction(AccessibilityNodeInfo.ACTION_CLICK);
-                        } else {
-                            AccessibilityNodeInfo parentNode = node;
-                            for (int i = 0; i < 5; i++) {
-                                if (null != parentNode) {
-                                    parentNode = parentNode.getParent();
-                                    if (null != parentNode && parentNode.isClickable() && !mLuckyClicked) {
-                                        parentNode.performAction(AccessibilityNodeInfo.ACTION_CLICK);
-                                        mLuckyClicked = true;
-                                        break;
-                                    }
-                                }
-                            }
+            List<AccessibilityNodeInfo> list = rootNode.findAccessibilityNodeInfosByText(getString(R.string.get_lucky));
+            if (null == list || list.size() == 0) return;
+
+            AccessibilityNodeInfo node = list.get(list.size() - 1);
+
+            if (node.isClickable()) {
+                node.performAction(ACTION_CLICK);
+            } else {
+                AccessibilityNodeInfo parentNode = node;
+                for (int i = 0; i < 5; i++) {
+                    if (null != parentNode) {
+                        parentNode = parentNode.getParent();
+                        if (null != parentNode && parentNode.isClickable() && !mLuckyClicked) {
+                            mLuckyClicked = true;
+                            parentNode.performAction(ACTION_CLICK);
                         }
                     }
                 }
             }
+        }
 
+        if (eventType == TYPE_WINDOW_STATE_CHANGED) {
+            String clazzName = event.getClassName().toString();
             if (clazzName.equals("com.tencent.mm.plugin.luckymoney.ui.LuckyMoneyReceiveUI")) {
                 AccessibilityNodeInfo nodeInfo = event.getSource();
-                if (null == nodeInfo) return;
-
                 traverseNode(nodeInfo);
             }
         }
