@@ -45,7 +45,7 @@ public class MonitorService extends AccessibilityService {
         final int eventType = event.getEventType();
 
         if (eventType == TYPE_NOTIFICATION_STATE_CHANGED) {
-            if (isLockScreen()) unlockScreen();
+            unlockScreen();
             luckyClicked = false;
         }
 
@@ -97,20 +97,16 @@ public class MonitorService extends AccessibilityService {
     }
 
     private void unlockScreen() {
-        PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
-        PowerManager.WakeLock wakeLock = pm.newWakeLock(PowerManager.ACQUIRE_CAUSES_WAKEUP
-                | PowerManager.SCREEN_BRIGHT_WAKE_LOCK, "light_screen");
-        wakeLock.acquire(1000);
-        wakeLock.release();
-
-        KeyguardManager km = (KeyguardManager) getSystemService(Context.KEYGUARD_SERVICE);
-        KeyguardManager.KeyguardLock keyguardLock = km.newKeyguardLock("unlock_screen");
+        KeyguardManager keyguardManager = (KeyguardManager) getSystemService(Context.KEYGUARD_SERVICE);
+        final KeyguardManager.KeyguardLock keyguardLock = keyguardManager.newKeyguardLock("MyKeyguardLock");
         keyguardLock.disableKeyguard();
-    }
 
-    private boolean isLockScreen() {
-        KeyguardManager km = (KeyguardManager) getSystemService(Context.KEYGUARD_SERVICE);
-        return km.inKeyguardRestrictedInputMode();
+        PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
+        PowerManager.WakeLock wakeLock = pm.newWakeLock(PowerManager.FULL_WAKE_LOCK
+                | PowerManager.ACQUIRE_CAUSES_WAKEUP
+                | PowerManager.ON_AFTER_RELEASE, "MyWakeLock");
+
+        wakeLock.acquire();
     }
 
     @Override
