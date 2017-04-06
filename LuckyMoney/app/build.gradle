@@ -11,10 +11,19 @@ android {
         versionCode 1
         versionName "1.0"
     }
+    signingConfigs {
+        release {
+            storeFile file("../chenjishi.keystore")
+            storePassword "331500311113Ctrl"
+            keyAlias "chenjishi_key"
+            keyPassword "331500311113Ctrl"
+        }
+    }
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
         }
     }
 }
