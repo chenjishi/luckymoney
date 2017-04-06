@@ -13,10 +13,10 @@ android {
     }
     signingConfigs {
         release {
-            storeFile file("../chenjishi.keystore")
-            storePassword "331500311113Ctrl"
-            keyAlias "chenjishi_key"
-            keyPassword "331500311113Ctrl"
+            storeFile file("../****.keystore")
+            storePassword "**********"
+            keyAlias "**********"
+            keyPassword "**********"
         }
     }
     buildTypes {
