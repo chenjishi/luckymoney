@@ -1,5 +1,6 @@
 package com.miscell.lucky;
 
+import android.Manifest;
 import android.accessibilityservice.AccessibilityServiceInfo;
 import android.app.Activity;
 import android.content.ContentResolver;
@@ -33,6 +34,7 @@ public class MainActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        checkPermission();
         setContentView(R.layout.activity_main);
         DisplayMetrics metrics = getResources().getDisplayMetrics();
         final float density = metrics.density;
@@ -139,5 +141,23 @@ public class MainActivity extends Activity {
                 })
                 .setNegativeButton("取消", null);
         dialog.show();
+    }
+
+    private void checkPermission() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) return;
+
+        String[] permissions = new String[]{
+                Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                Manifest.permission.READ_EXTERNAL_STORAGE};
+
+        boolean flag = true;
+        for (String s : permissions) {
+            if (checkSelfPermission(s) != PackageManager.PERMISSION_GRANTED) {
+                flag = false;
+                break;
+            }
+        }
+
+        if (!flag) requestPermissions(permissions, 233);
     }
 }

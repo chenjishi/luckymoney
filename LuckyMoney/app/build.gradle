@@ -1,22 +1,27 @@
 apply plugin: 'com.android.application'
 
+def gitVersion() {
+    def cmd = 'git rev-list HEAD --count'
+    cmd.execute([], project.rootDir).text.trim().toInteger()
+}
+
 android {
-    compileSdkVersion 24
+    compileSdkVersion 25
     buildToolsVersion "25.0.2"
 
     defaultConfig {
         applicationId "com.miscell.lucky"
         minSdkVersion 19
-        targetSdkVersion 24
-        versionCode 1
-        versionName "1.0"
+        targetSdkVersion 25
+        versionCode gitVersion()
+        versionName "2.0"
     }
     signingConfigs {
         release {
-            storeFile file("../****.keystore")
-            storePassword "**********"
-            keyAlias "**********"
-            keyPassword "**********"
+            storeFile file("../chenjishi.keystore")
+            storePassword "************"
+            keyAlias "************"
+            keyPassword "************"
         }
     }
     buildTypes {
@@ -24,6 +29,12 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.release
+            applicationVariants.all {variant ->
+                variant.outputs.each {output ->
+                    def timestamp = new Date().format('yyyyMMddHHmmss')
+                    output.outputFile = new File(output.outputFile.parent, "lucky-" + gitVersion() + "-" + timestamp + ".apk")
+                }
+            }
         }
     }
 }
@@ -31,6 +42,6 @@ android {
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     testCompile 'junit:junit:4.12'
-    compile 'com.android.support:appcompat-v7:24.2.1'
-    compile 'com.flurry.android:analytics:6.8.0'
+    compile 'com.android.support:appcompat-v7:25.3.1'
+    compile 'com.flurry.android:analytics:7.0.0@aar'
 }
